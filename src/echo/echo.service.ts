@@ -22,10 +22,13 @@ export class EchoService {
       // realUrl.hostname
       const report = await this.reportsService.findByHostname(realUrl.hostname)
       if (report) {
-        return "already exists"
+        return "We already know about this domain we are trying to remove the site from the internet."
       }
+
+      this.reportsService.create({ 'raw': url, 'host': realUrl.hostname })
+
     };
 
-    return "Tnx."
+    return "Thank you for reporting this site. We will do everything in our power to remove this treat from the internet."
   }
 }
