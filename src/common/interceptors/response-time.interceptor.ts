@@ -11,7 +11,7 @@ import { tap } from 'rxjs/operators';
 export class ResponseTimeInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     console.log('Before...');
-    console.log(context)
+    // console.log(context)
 
     const start = Date.now();
     return next

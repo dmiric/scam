@@ -3,7 +3,8 @@ import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 import { ResponseTimeInterceptor } from 'common/interceptors/response-time.interceptor';
-import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
+import { UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { ExtractHostNamePipe } from 'common/pipes/extract-host-name.pipe'
 
 @Controller('reports')
 export class ReportsController {
@@ -11,7 +12,10 @@ export class ReportsController {
 
   @Post()
   @UseInterceptors(ResponseTimeInterceptor)
-  create(@Body() createReportDto: CreateReportDto) {
+  create(@Body(
+    new ValidationPipe(),
+    new ExtractHostNamePipe())
+  createReportDto: CreateReportDto) {
     return this.reportsService.create(createReportDto);
   }
 

@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UsePipes } from '@nestjs/common';
 import { ReportsService } from '../reports/reports.service';
+import { TransformToObjectPipe } from './pipes/tranform-to-object.pipe';
+import { CreateReportDto } from 'reports/dto/create-report.dto';
 
 
 @Injectable()
@@ -7,28 +9,15 @@ export class EchoService {
 
   constructor(private reportsService: ReportsService) { }
 
-  async ban(text: string): Promise<string> {
-    const match = text.match(/^\/([^\s]+)\s?(.+)?/);
-    let url;
-    if (match !== null) {
-      if (match[2]) {
-        url = match[2];
-      }
+  @UsePipes(TransformToObjectPipe)
+  async ban(reportDto: CreateReportDto): Promise<string> {
+    console.log(reportDto)
+    try {
+      this.reportsService.create(reportDto);
+      return "Thank you for the report."
     }
-
-    const realUrl = new URL(url)
-
-    if (realUrl) {
-      // realUrl.hostname
-      const report = await this.reportsService.findByHostname(realUrl.hostname)
-      if (report) {
-        return "We already know about this domain we are trying to remove the site from the internet."
-      }
-
-      this.reportsService.create({ 'raw': url, 'host': realUrl.hostname })
-
-    };
-
-    return "Thank you for reporting this site. We will do everything in our power to remove this treat from the internet."
+    catch {
+      return "Failed to write to database. Please contact admin."
+    }
   }
 }

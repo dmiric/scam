@@ -1,4 +1,10 @@
+import { IsUrl, IsFQDN, IsOptional } from 'class-validator';
+
 export class CreateReportDto {
-  raw: string
-  host: string
+  @IsUrl()
+  url: string;
+
+  @IsOptional()
+  @IsFQDN()
+  host?: string;
 }

@@ -9,7 +9,7 @@ export class Report {
 
   @Column()
   @ApiProperty({ example: 'http://www.google.com', description: 'Raw url input from user.' })
-  raw: string;
+  url: string;
 
   @Column()
   @Index()

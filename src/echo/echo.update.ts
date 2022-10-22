@@ -1,4 +1,4 @@
-import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
+import { UseFilters, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
 import {
   Help,
   InjectBot,
@@ -15,6 +15,11 @@ import { ReverseTextPipe } from '../common/pipes/reverse-text.pipe';
 import { ResponseTimeInterceptor } from '../common/interceptors/response-time.interceptor';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { TelegrafExceptionFilter } from '../common/filters/telegraf-exception.filter';
+import { RemoveCommandPipe } from './pipes/remove-command.pipe';
+import { TransformToObjectPipe } from './pipes/tranform-to-object.pipe';
+import { ValidationPipe } from 'reports/pipes/validation.pipe';
+import { CreateReportDto } from 'reports/dto/create-report.dto';
+import { ExtractHostNamePipe } from 'common/pipes/extract-host-name.pipe';
 
 @Update()
 @UseInterceptors(ResponseTimeInterceptor)
@@ -43,8 +48,14 @@ export class EchoUpdate {
   }
 
   @Command('ban')
-  async onBanCommand(@Message('text') text: string): Promise<string> {
-    return await this.echoService.ban(text);
+  async onBanCommand(
+    @Message('text',
+      new RemoveCommandPipe(),
+      new TransformToObjectPipe(),
+      new ValidationPipe(),
+      new ExtractHostNamePipe()
+    ) report: CreateReportDto): Promise<string> {
+    return await this.echoService.ban(report);
   }
 
   @On('text')

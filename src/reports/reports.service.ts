@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseInterceptors, UsePipes } from '@nestjs/common';
 import { CreateReportDto } from './dto/create-report.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Report } from './entities/report.entity';
+import { PlainToReportPipe } from 'reports/pipes/plain-to-report.pipe';
 
 @Injectable()
 export class ReportsService {
@@ -12,10 +13,8 @@ export class ReportsService {
     @InjectRepository(Report) private reportRepository: Repository<Report>
   ) { }
 
-  create(createReportDto: CreateReportDto): Promise<Report> {
-    const report = new Report();
-    report.raw = createReportDto.raw;
-    report.host = createReportDto.host;
+  @UsePipes(PlainToReportPipe)
+  create(report: CreateReportDto): Promise<Report> {
     return this.reportRepository.save(report);
   }
 
